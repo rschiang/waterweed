@@ -35,9 +35,19 @@ class MSWindow: NSWindow {
         minimizeButton.centerYAnchor.constraint(equalTo: titlebar.centerYAnchor).isActive = true
         minimizeButton.trailingAnchor.constraint(equalTo: zoomButton.leadingAnchor, constant: -titleBarSpacing).isActive = true
 
-        let titleText = titlebar.subviews.first { $0 is NSTextField }!
+        let icon = NSImage(systemSymbolName: "macwindow", accessibilityDescription: "")?.withSymbolConfiguration(.preferringMulticolor()) ?? NSApp.applicationIconImage
+        let image = NSImageView(image: icon!)
+        image.translatesAutoresizingMaskIntoConstraints = false
+        image.heightAnchor.constraint(equalToConstant: 16).isActive = true
+        image.widthAnchor.constraint(equalTo: image.heightAnchor).isActive = true
+        titlebar.addSubview(image)
+        image.centerYAnchor.constraint(equalTo: titlebar.centerYAnchor).isActive = true
+        image.leadingAnchor.constraint(equalTo: titlebar.leadingAnchor, constant: titleBarMargin).isActive = true
+
+        let titleText = titlebar.subviews.first { $0 is NSTextField }! as! NSTextField
         titleText.translatesAutoresizingMaskIntoConstraints = false
         titleText.centerYAnchor.constraint(equalTo: titlebar.centerYAnchor).isActive = true
-        titleText.leadingAnchor.constraint(equalTo: titlebar.leadingAnchor, constant: titleBarMargin).isActive = true
+        titleText.leadingAnchor.constraint(equalTo: image.trailingAnchor, constant: titleBarSpacing).isActive = true
+        titleText.alignment = .natural
     }
 }
