@@ -8,6 +8,8 @@ import AppKit
 
 class MSVisualEffectView: NSVisualEffectView {
 
+    let glassLayer = MSGlassView()
+
     var tintColor: CGColor = .clear {
         didSet { self.needsDisplay = true }
     }
