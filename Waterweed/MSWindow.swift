@@ -65,12 +65,13 @@ class MSWindow: NSWindow {
         titleText.leadingAnchor.constraint(equalTo: iconView!.trailingAnchor, constant: titleBarSpacing).isActive = true
         titleText.alignment = .natural
         titleText.textColor = .labelColor
-        titleText.font = .systemFont(ofSize: NSFont.systemFontSize, weight: .medium)
+        //titleText.font = .systemFont(ofSize: NSFont.systemFontSize, weight: .medium)
 
         let titleShadow = NSShadow()
         titleShadow.shadowColor = .white.withAlphaComponent(0.6)
         titleShadow.shadowBlurRadius = 10.0
         titleShadow.shadowOffset = .zero
+        titleText.wantsLayer = true
         titleText.shadow = titleShadow
     }
 
@@ -84,6 +85,19 @@ class MSWindow: NSWindow {
         view.blendingMode = .behindWindow
         view.state = .active
         self.contentView = view
+
+        let content = NSView()
+        let layer = content.makeBackingLayer()
+        layer.backgroundColor = NSColor.windowBackgroundColor.cgColor
+        layer.borderColor = NSColor.black.withAlphaComponent(0.28).cgColor
+        layer.borderWidth = 1.0
+        content.layer = layer
+        view.addSubview(content)
+        content.translatesAutoresizingMaskIntoConstraints = false
+        content.topAnchor.constraint(equalTo: view.layoutMarginsGuide.topAnchor, constant: -8).isActive = true
+        content.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -8).isActive = true
+        content.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 8).isActive = true
+        content.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -8).isActive = true
     }
 }
 
@@ -108,7 +122,7 @@ class MSVisualEffectView: NSVisualEffectView {
             guard let name = filter.value(forKey: "name") as? String else { continue }
             switch name {
             case "gaussianBlur":
-                filter.setValue(10.0, forKey: "inputRadius")
+                filter.setValue(5.0, forKey: "inputRadius")
             default: continue
             }
         }
