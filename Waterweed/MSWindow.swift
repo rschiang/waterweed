@@ -107,7 +107,7 @@ class MSWindow: NSWindow {
         let view = MSVisualEffectView()
         view.material = .fullScreenUI
         view.blendingMode = .behindWindow
-        view.tintColor = .init(red: 0.42, green: 0.45, blue: 0.72, alpha: 0.02)
+        view.tintColor = .init(red: 0.42, green: 0.45, blue: 0.72, alpha: 0.988)
         self.contentView = view
 
         let glass = MSGlassView()
