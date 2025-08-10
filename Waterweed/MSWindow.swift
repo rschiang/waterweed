@@ -25,6 +25,10 @@ class MSWindow: NSWindow {
         let center = NotificationCenter.default
         center.addObserver(forName: NSWindow.didEndLiveResizeNotification,
                            object: self, queue: nil, using: windowDidEndLiveResize(_:))
+        center.addObserver(forName: NSWindow.didBecomeKeyNotification,
+                           object: self, queue: nil, using: windowDidBecomeOrResignKey(_:))
+        center.addObserver(forName: NSWindow.didResignKeyNotification,
+                           object: self, queue: nil, using: windowDidBecomeOrResignKey(_:))
     }
 
     func updateTitleBarConstraints() {
@@ -89,6 +93,15 @@ class MSWindow: NSWindow {
         // Reset text styles
         text.alignment = .natural
         text.font = .systemFont(ofSize: NSFont.systemFontSize, weight: .regular)
+        text.wantsLayer = true
+        if let layer = text.layer {
+            layer.masksToBounds = false
+            layer.shadowColor = self.isDarkMode ? .black : .white
+            layer.shadowRadius = 3
+            layer.shadowOpacity = 0.75
+            layer.shadowOffset = .zero
+            layer.setNeedsDisplay()
+        }
     }
 
     func buildContentView() {
@@ -110,5 +123,10 @@ class MSWindow: NSWindow {
 
     func windowDidEndLiveResize(_: Notification) {
         updateTitleBarConstraints()
+    }
+
+    func windowDidBecomeOrResignKey(_: Notification) {
+        guard let titlebar = self.titleBarView else { return }
+        updateTitleText(withTitleBar: titlebar)
     }
 }

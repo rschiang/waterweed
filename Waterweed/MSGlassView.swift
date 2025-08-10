@@ -70,6 +70,11 @@ class MSGlassView: NSView {
         }
     }
 
+    override func updateLayer() {
+        super.updateLayer()
+        self.layer?.compositingFilter = "overlayBlendMode"
+    }
+
     override func viewDidMoveToSuperview() {
         super.viewDidMoveToSuperview()
         guard let superview = self.superview else { return }

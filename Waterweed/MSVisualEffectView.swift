@@ -33,7 +33,7 @@ class MSVisualEffectView: NSVisualEffectView {
                     guard let name = filter.value(forKey: "name") as? NSString else { continue }
                     switch name {
                     case "gaussianBlur":
-                        filter.setValue(5.0, forKey: "inputRadius")
+                        filter.setValue(6.0, forKey: "inputRadius")
                     case "colorSaturate":
                         filter.setValue(0.51, forKey: "inputAmount")
                     default: continue
