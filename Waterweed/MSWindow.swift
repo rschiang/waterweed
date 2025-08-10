@@ -34,7 +34,7 @@ class MSWindow: NSWindow {
         let zoomButton = self.standardWindowButton(.zoomButton)
         let minimizeButton = self.standardWindowButton(.miniaturizeButton)
 
-        // Do not attempt to modify title bar height
+        // Do not attempt to modify title bar height via constraint. Use frame instead.
         titlebar.setFrameSize(.init(width: titlebar.frame.width, height: MSWindow.titleBarHeight))
 
         // Only update constraints if none has been set
@@ -89,14 +89,6 @@ class MSWindow: NSWindow {
         // Reset text styles
         text.alignment = .natural
         text.font = .systemFont(ofSize: NSFont.systemFontSize, weight: .regular)
-        text.cell?.backgroundStyle = .raised
-        text.wantsLayer = true
-        if let layer = text.layer {
-            layer.shadowColor = .white
-            layer.shadowOpacity = 0.6
-            layer.shadowRadius = 9.0
-            layer.shadowOffset = .init(width: 0.0, height: 1.0)
-        }
     }
 
     func buildContentView() {

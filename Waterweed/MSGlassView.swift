@@ -17,16 +17,16 @@ class MSGlassView: NSView {
 
     static let reflectionGradient: CGGradient = .fromGrayPoints(
         values: [
-            0.051, 0.0156, 0.0, 0.0156, 0.0392, 0.051, 0.051, 0.047, 0.0352, 0.0196, 0.0,
+            0.0, 0.0156, 0.0392, 0.051, 0.051, 0.047, 0.0352, 0.0196, 0.0,
             0.0, 0.0118, 0.0392, 0.047, 0.0392, 0.008, 0.0,
             0.0, 0.008, 0.0118, 0.0, 0.0, 0.043, 0.051, 0.0314,
-            0.0, 0.008, 0.0118, 0.0314, 0.0392, 0.047, 0.051,
+            0.0, 0.008, 0.0118, 0.0314, 0.0392, 0.047, 0.051, 0.0156, 0.0
         ],
         locations: [
-            0.0, 0.0125, 0.025, 0.05, 0.085, 0.12, 0.18, 0.23, 0.27, 0.285,
-            0.49, 0.5, 0.515, 0.58, 0.595, 0.605, 0.615,
-            0.685, 0.69, 0.705, 0.73, 0.76, 0.775, 0.78, 0.83,
-            0.85, 0.895, 0.915, 0.94, 0.96, 0.965, 1.0
+            0.0, 0.025, 0.06, 0.095, 0.125, 0.155, 0.205, 0.245, 0.26,
+            0.465, 0.475, 0.49, 0.555, 0.57, 0.58, 0.59,
+            0.66, 0.665, 0.68, 0.705, 0.735, 0.75, 0.755, 0.805,
+            0.825, 0.87, 0.89, 0.915, 0.935, 0.94, 0.975, 0.9875, 1.0,
         ])!
 
     var isShineVisible: Bool = false {
@@ -37,19 +37,28 @@ class MSGlassView: NSView {
 
     override init(frame: NSRect) {
         super.init(frame: frame)
+        self.layerContentsRedrawPolicy = .onSetNeedsDisplay
     }
 
     required init(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
+    override func resize(withOldSuperviewSize oldSize: NSSize) {
+        self.setNeedsDisplay(self.bounds)
+    }
+
     override func draw(_: NSRect) {
         let ctx = NSGraphicsContext.current!.cgContext
 
-        ctx.drawLinearGradient(MSGlassView.reflectionGradient,
-                               start: .init(x: 0.0, y: 600.0),
-                               end: .init(x: 800.0, y: 0.0),
-                               options: [.drawsBeforeStartLocation, .drawsAfterEndLocation])
+        for i in 0...Int(ceil(self.bounds.width / 800)) {
+            let x = 1400.0 * Double(i)
+            ctx.drawLinearGradient(MSGlassView.reflectionGradient,
+                                   start: .init(x: x, y: 600.0),
+                                   end: .init(x: x + 800.0, y: 0.0),
+                                   options: [.drawsBeforeStartLocation, .drawsAfterEndLocation])
+
+        }
 
         if isShineVisible {
             ctx.drawRadialGradient(MSGlassView.shineGradient,
