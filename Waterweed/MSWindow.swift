@@ -108,15 +108,12 @@ class MSWindow: NSWindow {
         view.material = .fullScreenUI
         view.blendingMode = .behindWindow
         view.tintColor = .init(red: 0.42, green: 0.45, blue: 0.72, alpha: 0.988)
+        view.state = .active
         self.contentView = view
 
         let glass = MSGlassView()
         glass.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(glass)
-        view.topAnchor.constraint(equalTo: glass.topAnchor).isActive = true
-        view.bottomAnchor.constraint(equalTo: glass.bottomAnchor).isActive = true
-        view.leadingAnchor.constraint(equalTo: glass.leadingAnchor).isActive = true
-        view.trailingAnchor.constraint(equalTo: glass.trailingAnchor).isActive = true
     }
 
     func windowDidEndLiveResize(_: Notification) {

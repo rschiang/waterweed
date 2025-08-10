@@ -16,42 +16,55 @@ class MSVisualEffectView: NSVisualEffectView {
 
     override func updateLayer() {
         super.updateLayer()
+        guard let backingLayer = self.layer else { return }
+        guard let material = backingLayer.sublayers?.first as? CALayer else { return }
+        let isWindowActive = self.window?.isKeyWindow ?? false
 
-        guard let material = self.layer?.sublayers?.first as? CALayer else { return }
+        // Group our actions in batches, disable fade-in animations
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
+        defer { CATransaction.commit() }
+
         for layer in material.sublayers! {
             switch layer.name {
             case "backdrop":
-                layer.backgroundColor = self.tintColor.copy(alpha: self.tintColor.alpha * 0.08)
-                updateLayerFilter(layer)
+                for filterObject in layer.filters ?? [] {
+                    guard let filter = filterObject as? NSObject else { continue } // CAFilter
+                    guard let name = filter.value(forKey: "name") as? NSString else { continue }
+                    switch name {
+                    case "gaussianBlur":
+                        filter.setValue(5.0, forKey: "inputRadius")
+                    case "colorSaturate":
+                        filter.setValue(0.51, forKey: "inputAmount")
+                    default: continue
+                    }
+                }
+
             case "fill":
-                layer.backgroundColor = self.tintColor.copy(alpha: self.tintColor.alpha * 0.43)
-                layer.compositingFilter = "multiplyBlendMode"
-            case "tone", "Chameleon":
                 layer.backgroundColor = .clear
-                layer.opacity = 0
-                layer.isHidden = true
+
+            case "tone":
+                layer.backgroundColor = self.tintColor.copy(alpha: self.tintColor.alpha * (isWindowActive ? 0.43 : 0.032))
+                layer.compositingFilter = "multiplyBlendMode"
+
             default: continue
             }
         }
     }
 
-    func updateLayerFilter(_ layer: CALayer) {
-        for filterObject in layer.filters ?? [] {
-            guard let filter = filterObject as? NSObject else { continue } // CAFilter
-            print("filter:", type(of: filter).className(), filter.value(forKey: "name") ?? "(?)", type(of: filter.value(forKey: "name")!))
-            guard let name = filter.value(forKey: "name") as? NSString else { continue }
+    override func viewDidMoveToWindow() {
+        super.viewDidMoveToWindow()
+        guard let window = self.window else { return }
+        let center = NotificationCenter.default
+        center.addObserver(self, selector: #selector(windowDidBecomeKey(_:)), name: NSWindow.didBecomeKeyNotification, object: window)
+        center.addObserver(self, selector: #selector(windowDidResignKey(_:)), name: NSWindow.didResignKeyNotification, object: window)
+    }
 
-            switch name {
-            case "gaussianBlur":
-                filter.setValue(7.0, forKey: "inputRadius")
-            case "colorSaturate":
-                print("amount:", filter.value(forKey: "inputAmount") ?? "(?)")
-                filter.setValue(0.5, forKey: "inputAmount")
-            default: continue
-            }
+    @objc func windowDidBecomeKey(_: Notification) {
+        self.needsDisplay = true
+    }
 
-            // Prints the filter name out for easier debugging
-            print("filter", name)
-        }
+    @objc func windowDidResignKey(_: Notification) {
+        self.needsDisplay = true
     }
 }
