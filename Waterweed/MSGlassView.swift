@@ -63,9 +63,7 @@ class MSGlassView: NSView {
                                                 0.85, 0.895, 0.915, 0.94, 0.96, 0.965, 1.0
                                                ])!
 
-    override var isFlipped: Bool {
-        true
-    }
+    override var isFlipped: Bool { true }
 
     override func draw(_: NSRect) {
         let ctx = NSGraphicsContext.current!.cgContext
@@ -79,5 +77,21 @@ class MSGlassView: NSView {
                                endCenter: .init(x: 228.0, y: 228.0),
                                endRadius: 228.0,
                                options: .drawsAfterEndLocation)
+    }
+
+    override func viewDidMoveToWindow() {
+        super.viewDidMoveToWindow()
+        guard let window = self.window else { return }
+        let center = NotificationCenter.default
+        center.addObserver(self, selector: #selector(windowDidBecomeKey(_:)), name: NSWindow.didBecomeKeyNotification, object: window)
+        center.addObserver(self, selector: #selector(windowDidResignKey(_:)), name: NSWindow.didResignKeyNotification, object: window)
+    }
+
+    @objc func windowDidBecomeKey(_: Notification) {
+        self.layer?.opacity = 0.9
+    }
+
+    @objc func windowDidResignKey(_: Notification) {
+        self.layer?.opacity = 0.75
     }
 }
